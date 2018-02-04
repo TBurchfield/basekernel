@@ -9,7 +9,7 @@ ISOGEN=genisoimage
 
 all: basekernel.iso
 
-basekernel.iso: basekernel.img test.exe saver.exe usrshell.exe ball.exe long.exe
+basekernel.iso: basekernel.img test.exe saver.exe usrshell.exe ball.exe long.exe write.exe copy.exe
 	${ISOGEN} -J -R -o $@ -b $^ $<
 
 basekernel.img: bootblock kernel
@@ -33,6 +33,9 @@ test.exe: test.o $(USER_OBJECTS)
 long.exe: long.o $(USER_OBJECTS)
 	${LD} ${KERNEL_LDFLAGS} -Ttext 0x80000000 -s --oformat binary user-start.o $< syscall.o syscalls.o string.o user-io.o -o $@
 
+write.exe: write.o $(USER_OBJECTS)
+	${LD} ${KERNEL_LDFLAGS} -Ttext 0x80000000 -s --oformat binary user-start.o $< syscall.o syscalls.o string.o user-io.o -o $@
+
 saver.exe: saver.o $(USER_OBJECTS)
 	${LD} ${KERNEL_LDFLAGS} -Ttext 0x80000000 -s --oformat binary user-start.o $< syscall.o syscalls.o string.o user-io.o -o $@
 
@@ -42,5 +45,11 @@ ball.exe: ball.o $(USER_OBJECTS)
 usrshell.exe: usrshell.o $(USER_OBJECTS)
 	${LD} ${KERNEL_LDFLAGS} -Ttext 0x80000000 -s --oformat binary user-start.o $< syscall.o syscalls.o user-io.o string.o -o $@
 
+copy.exe: copy.o $(USER_OBJECTS)
+	${LD} ${KERNEL_LDFLAGS} -Ttext 0x80000000 -s --oformat binary user-start.o $< syscall.o syscalls.o string.o user-io.o -o $@
+
 clean:
-	rm -rf basekernel.img bootblock kernel *.o kevinfs/*.o test.exe saver.exe ball.exe long.exe usrshell.exe
+	rm -rf basekernel.img bootblock kernel *.o kevinfs/*.o test.exe saver.exe ball.exe long.exe usrshell.exe write.exe copy.exe
+
+clean:
+	rm -rf basekernel.img bootblock kernel *.o kevinfs/*.o test.exe saver.exe ball.exe long.exe write.exe copy.exe
