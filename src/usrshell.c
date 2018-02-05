@@ -22,7 +22,7 @@ int process_command(char * line) {
       yield();
     }
     else
-      printf("run: missing argument\n");
+      printf("start: missing argument\n");
   }
   else if (pch && !strcmp(pch, "run"))
   {
@@ -41,7 +41,7 @@ int process_command(char * line) {
             }
     }
     else
-      printf("run: missing argument");
+      printf("run: missing argument\n");
   }
   else if (pch && !strcmp(pch, "passrun"))
   {
