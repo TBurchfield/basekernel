@@ -100,13 +100,38 @@ int process_command(char * line) {
         }
 
   }
+  else if (pch && !strcmp(pch, "mount"))
+  {
+    pch = strtok(0, " ");
+    int unit;
+    if (!(pch && str2int(pch, &unit))) {
+      printf("Incorrect arguments, usage: mount <unit_no> <fs_type> <name>\n");
+      return 1;
+    }
+    char *fs_type = strtok(0, " ");
+    char *fs_name = strtok(0, " ");
+    mount(unit, fs_type, fs_name);
+    chdir(fs_name, "/");
+  }
+  else if (pch && !strcmp(pch, "chdir"))
+  {
+    char *fs_name = strtok(0, " ");
+    if (!fs_name) {
+      printf("Incorrect arguments, usage: chdir <fs_name> <path>\n");
+      return 1;
+    }
+    char *path = strtok(0, " ");
+    chdir(fs_name, path);
+  }
   else if (pch && !strcmp(pch, "help"))
   {
     printf(
-      "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
+      "%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
       "Commands:",
       "echo <text>",
       "run <path>",
+      "mount <unit_no> <fs_type> <name>",
+      "chdir <name> <path>",
       "passrun <path>",
       "start <path>",
             "kill <pid>",
