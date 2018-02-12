@@ -73,6 +73,10 @@ int process_run( const char *cmd, const char** argv, int argc ) {
 	return syscall( SYSCALL_PROCESS_RUN, (uint32_t) cmd, (uint32_t) argv, argc, 0, 0 );
 }
 
+int process_run_root(char rorw, int root, const char *cmd, const char** argv, int argc ) {
+	return syscall( SYSCALL_PROCESS_RUN_ROOT, rorw, root, (uint32_t) cmd, (uint32_t) argv, argc);
+}
+
 int process_kill( unsigned int pid ) {
     return syscall( SYSCALL_PROCESS_KILL, pid, 0, 0, 0, 0 );
 }
@@ -83,4 +87,12 @@ int process_reap( unsigned int pid ) {
 
 int process_wait( struct process_info* info, int timeout ) {
     return syscall( SYSCALL_PROCESS_WAIT, (uint32_t)info, timeout, 0, 0, 0 );
+}
+
+int add_root_from_absolute(char rorw, const char * path) {
+    return syscall( SYSCALL_ADD_ROOT_ABSOLUTE, rorw, (uint32_t) path, 0, 0, 0 );
+}
+
+int add_root(char rorw, int from, const char * path) {
+    return syscall( SYSCALL_ADD_ROOT, rorw, from, (uint32_t) path, 0, 0 );
 }

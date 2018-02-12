@@ -14,6 +14,7 @@ void debug( const char *str );
 void exit( int status );
 int yield();
 int process_run( const char *cmd, const char** argv, int argc );
+int process_run_root(char rorw, int root, const char *cmd, const char** argv, int argc );
 int open( const char *path, int mode, int flags );
 int read( int fd, void *data, int length );
 int write( int fd, void *data, int length );
@@ -29,5 +30,7 @@ int process_parent();
 int process_kill( unsigned int pid );
 int process_reap( unsigned int pid );
 int process_wait( struct process_info* info, int timeout );
+int add_root_from_absolute(char rorw, const char * path);
+int add_root(char rorw, int from, const char * path);
 
 #endif

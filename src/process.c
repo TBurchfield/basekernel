@@ -109,6 +109,12 @@ void process_delete( struct process *p )
             kfree(p->windows[i]);
         }
     }
+    for (i = 0; i < p->w_root_count; i++) {
+      kfree(p->w_roots[i]);
+    }
+    for (i = 0; i < p->r_root_count; i++) {
+      kfree(p->r_roots[i]);
+    }
     pagetable_delete(p->pagetable);
     processes[p->pid-1] = 0;
 	memory_free_page(p->kstack);

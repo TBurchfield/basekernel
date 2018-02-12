@@ -16,6 +16,7 @@ See the file LICENSE for details.
 #include "fs.h"
 #include "clock.h"
 #include "rtc.h"
+#include "kmalloc.h"
 
 int sys_debug( const char *str )
 {
@@ -101,6 +102,20 @@ int sys_process_run( const char *path, const char** argv, int argc )
 	process_launch(p);
 
 	return p->pid;
+}
+
+int sys_process_run_root(char rorw, int root, const char *path, const char** argv, int argc )
+{
+  char fullpath[1024];
+  if ((rorw == 'w' && root >= current->w_root_count) || (rorw == 'r' && root >= current->r_root_count))
+    return ENOENT;
+
+  if (rorw == 'w') strcpy(fullpath, current->w_roots[root]);
+  else if (rorw == 'r') strcpy(fullpath, current->r_roots[root]);
+  else return EINVAL;
+
+  strcat(fullpath, path);
+  return sys_process_run(fullpath, argv, argc);
 }
 
 uint32_t sys_gettimeofday()
@@ -250,6 +265,41 @@ int sys_process_reap( int pid )
 	return process_reap(pid);
 }
 
+int sys_add_root_from_absolute(char rorw, const char * path)
+{
+  if ((rorw == 'w' && current->w_root_count >= PROCESS_MAX_ROOTS ) || (rorw == 'r' && current->w_root_count >= PROCESS_MAX_ROOTS ))
+    return ENOENT;
+  char * storepath = kmalloc(strlen(path));
+  if (!storepath) return ENOSYS;
+  strcpy(storepath, path);
+  if (rorw == 'w') current->w_roots[current->w_root_count++] = storepath;
+  else if (rorw == 'r') current->r_roots[current->r_root_count++] = storepath;
+  else return ENOSYS;
+
+  return 0;
+}
+
+int sys_add_root(char rorw, int from, const char * path)
+{
+  char fullpath[1024];
+  if ((rorw == 'w' && (from >= current->w_root_count || current->w_root_count >= PROCESS_MAX_ROOTS )) || (rorw == 'r' && (from >= current->r_root_count || current->w_root_count >= PROCESS_MAX_ROOTS )))
+    return ENOENT;
+
+  if (rorw == 'w') strcpy(fullpath, current->w_roots[from]);
+  else if (rorw == 'r') strcpy(fullpath, current->r_roots[from]);
+  else return EINVAL;
+
+  strcat(fullpath, path);
+  char * storepath = kmalloc(strlen(fullpath));
+  if (!storepath) return ENOSYS;
+  strcpy(storepath, fullpath);
+
+  if (rorw == 'w') current->w_roots[current->w_root_count++] = storepath;
+  else if (rorw == 'r') current->r_roots[current->r_root_count++] = storepath;
+
+  return 0;
+}
+
 int32_t syscall_handler( syscall_t n, uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e )
 {
 	switch(n) {
@@ -275,9 +325,12 @@ int32_t syscall_handler( syscall_t n, uint32_t a, uint32_t b, uint32_t c, uint32
 	case SYSCALL_PROCESS_SELF:	return sys_process_self();
 	case SYSCALL_PROCESS_PARENT:	return sys_process_parent();
 	case SYSCALL_PROCESS_RUN:	return sys_process_run((const char *)a, (const char**)b, c);
+	case SYSCALL_PROCESS_RUN_ROOT:	return sys_process_run_root((char)a,b,(const char *)c, (const char**)d, e);
 	case SYSCALL_PROCESS_KILL:	return sys_process_kill(a);
 	case SYSCALL_PROCESS_WAIT:	return sys_process_wait((struct process_info*)a, b);
 	case SYSCALL_PROCESS_REAP:	return sys_process_reap(a);
+	case SYSCALL_ADD_ROOT_ABSOLUTE:	return sys_add_root_from_absolute(a, (const char *)b);
+	case SYSCALL_ADD_ROOT:	return sys_add_root(a, b, (const char *)c);
 	default:		return -1;
 	}
 }
