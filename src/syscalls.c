@@ -39,6 +39,10 @@ int close( int fd ) {
 	return syscall( SYSCALL_CLOSE, fd, 0, 0, 0, 0 );
 }
 
+int lower_namespace(const char * ns, const char * path) {
+	return syscall( SYSCALL_LOWER_NAMESPACE, (uint32_t)ns, (uint32_t)path, 0, 0, 0 );
+}
+
 char keyboard_read_char() {
 	return syscall( SYSCALL_KEYBOARD_READ_CHAR, 0, 0, 0, 0, 0 );
 }
