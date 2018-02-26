@@ -165,37 +165,19 @@ struct fs_dirent_node *cdrom_dirent_read_dir(struct fs_dirent *dir)
 
     struct fs_dirent_node *node = kmalloc(sizeof(struct fs_dirent_node));
     node->next = head;
-    node->data = dir;
-    node->data = cdrom_dirent_lookup(dir, d->ident);
     head = node;
-    if (!node->data) {
-      printf("issue:\n");
-      if (d->ident[0] == 0) {
-        printf("issue with '.' .\n");
-        return 0;
-      }
-      else if (d->ident[0] == 1) {
-        printf("issue with '..' .\n");
-        return 0;
-      }
-      else {
-        printf("issue with %s.\n",d->ident);
-        return 0;
-      }
-    }
     if (d->ident[0] == 0) {
-      printf("processing with '.' .\n");
+      node->name = strdup(".");
     }
     else if (d->ident[0] == 1) {
-      printf("processing with '..' .\n");
+      node->name = strdup("..");
     }
     else {
-      printf("processing with %s.\n",d->ident);
+      node->name = strdup(d->ident);
     }
 		d = (struct iso_9660_directory_entry *)((char*)d+d->descriptor_length);
 		data_length -= d->descriptor_length;
 	}
-  printf("end of loop\n");
 
 	kfree(data);
 

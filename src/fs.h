@@ -28,7 +28,7 @@ struct fs_volume {
 };
 
 struct fs_dirent_node {
-  struct fs_dirent * data;
+  char *name;
   struct fs_dirent_node * next;
 };
 
