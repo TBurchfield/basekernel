@@ -91,11 +91,6 @@ struct fs_dirent *fs_volume_root(struct fs_volume *v)
 	return 0;
 }
 
-int test() {
-  if (current) return 1;
-  return 0;
-}
-
 struct fs_dirent_node *fs_dirent_readdir(struct fs_dirent *d)
 {
 	const struct fs_dirent_ops *ops = d->ops;
