@@ -53,7 +53,7 @@ int fs_file_read(struct fs_file *f, char *buffer, uint32_t n);
 int fs_file_write(struct fs_file *f, char *buffer, uint32_t n);
 int fs_file_close(struct fs_file *f);
 struct fs_dirent *fs_dirent_namei(struct fs_dirent *d, const char *path);
-struct fs_dirent_node *fs_dirent_readdir(struct fs_dirent *d);
+int fs_dirent_readdir(struct fs_dirent *d, char * buffer, int length);
 int fs_dirent_rmdir(struct fs_dirent *d, const char *name);
 int fs_dirent_link(struct fs_dirent *d, const char *oldpath, const char *newpath);
 int fs_dirent_unlink(struct fs_dirent *d, const char *name);

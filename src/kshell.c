@@ -13,15 +13,13 @@
 #include "kevinfs/kevinfs_test.h"
 #include "syscall_handler.h"
 
-static int print_directory( struct fs_dirent_node * head )
+static int print_directory( char *d, int length )
 {
-  struct fs_dirent_node * temp;
-	while(head) {
-		console_printf("%s\n",head->name);
-    kfree(head->name);
-    temp = head;
-    head = head->next;
-    kfree(temp);
+	while(length>0) {
+		console_printf("%s\n",d);
+		int len = strlen(d)+1;
+		d += len;
+		length -= len;
 	}
 	return 0;
 }
@@ -57,8 +55,13 @@ static int list_directory( const char *path )
 {
     struct fs_dirent *d = current_directory;
     if(d) {
-        struct fs_dirent_node* head = fs_dirent_readdir(d);
-        print_directory(head);
+        int buffer_length = 1024;
+        char *buffer = kmalloc(buffer_length);
+        if(buffer) {
+            int length = fs_dirent_readdir(d,buffer,buffer_length);
+            print_directory(buffer,length);
+            kfree(buffer);
+        }
     } else {
         printf("couldn't access root dir!\n");
     }

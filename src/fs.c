@@ -91,12 +91,27 @@ struct fs_dirent *fs_volume_root(struct fs_volume *v)
 	return 0;
 }
 
-struct fs_dirent_node *fs_dirent_readdir(struct fs_dirent *d)
+int fs_dirent_readdir(struct fs_dirent *d, char * buffer, int length)
 {
 	const struct fs_dirent_ops *ops = d->ops;
-	if (ops->readdir)
-		return ops->readdir(d);
-	return 0;
+	if (!ops->readdir)
+    return 0;
+  struct fs_dirent_node* head = ops->readdir(d);
+  struct fs_dirent_node* temp;
+  int total = 0;
+  while (head) {
+    int len = strlen(head->name) + 1;
+    if (total + len < length) {
+      strcpy(buffer, head->name);
+      total += len;
+      buffer += len;
+    }
+    temp = head;
+    head = head->next;
+    kfree(temp->name);
+    kfree(temp);
+  }
+  return total;
 }
 
 static struct fs_dirent *fs_dirent_lookup(struct fs_dirent *d, const char *name)
