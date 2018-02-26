@@ -2,6 +2,7 @@
 #include "fs_ops.h"
 #include "kmalloc.h"
 #include "string.h"
+#include "process.h"
 #include "list.h"
 
 struct list l;
@@ -90,12 +91,17 @@ struct fs_dirent *fs_volume_root(struct fs_volume *v)
 	return 0;
 }
 
-int fs_dirent_readdir(struct fs_dirent *d, char *buffer, int buffer_length)
+int test() {
+  if (current) return 1;
+  return 0;
+}
+
+struct fs_dirent_node *fs_dirent_readdir(struct fs_dirent *d)
 {
 	const struct fs_dirent_ops *ops = d->ops;
 	if (ops->readdir)
-		return ops->readdir(d, buffer, buffer_length);
-	return -1;
+		return ops->readdir(d);
+	return 0;
 }
 
 static struct fs_dirent *fs_dirent_lookup(struct fs_dirent *d, const char *name)

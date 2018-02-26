@@ -149,45 +149,57 @@ static struct fs_dirent * cdrom_dirent_lookup( struct fs_dirent *dir, const char
 	return 0;
 }
 
-static int cdrom_dirent_read_dir( struct fs_dirent *dir, char *buffer, int buffer_length )
+struct fs_dirent_node *cdrom_dirent_read_dir(struct fs_dirent *dir)
 {
 	struct cdrom_dirent *cddir = dir->private_data;
 	char *data = cdrom_dirent_load(dir);
 	if(!data) return 0;
 
 	int data_length = cddir->length;
-	int total = 0;
 
 	struct iso_9660_directory_entry *d = (struct iso_9660_directory_entry *) data;
 
+  struct fs_dirent_node * head = 0;
 	while(data_length>0 && d->descriptor_length>0 ) {
 		fix_filename(d->ident,d->ident_length);
 
-		if(d->ident[0]==0) {
-			strcpy(buffer,".");
-			buffer+=2;
-			buffer_length-=2;
-			total+=2;
-		} else if(d->ident[0]==1) {
-			strcpy(buffer,"..");
-			buffer+=3;
-			buffer_length-=3;
-			total+=3;
-		} else {
-			strcpy(buffer,d->ident);
-			int len = strlen(d->ident) + 1;
-      strtolower(buffer);
-			buffer += len;
-			buffer_length -= len;
-			total += len;
-		}
+    struct fs_dirent_node *node = kmalloc(sizeof(struct fs_dirent_node));
+    node->next = head;
+    node->data = dir;
+    node->data = cdrom_dirent_lookup(dir, d->ident);
+    head = node;
+    if (!node->data) {
+      printf("issue:\n");
+      if (d->ident[0] == 0) {
+        printf("issue with '.' .\n");
+        return 0;
+      }
+      else if (d->ident[0] == 1) {
+        printf("issue with '..' .\n");
+        return 0;
+      }
+      else {
+        printf("issue with %s.\n",d->ident);
+        return 0;
+      }
+    }
+    if (d->ident[0] == 0) {
+      printf("processing with '.' .\n");
+    }
+    else if (d->ident[0] == 1) {
+      printf("processing with '..' .\n");
+    }
+    else {
+      printf("processing with %s.\n",d->ident);
+    }
 		d = (struct iso_9660_directory_entry *)((char*)d+d->descriptor_length);
 		data_length -= d->descriptor_length;
 	}
+  printf("end of loop\n");
 
 	kfree(data);
 
-	return total;
+	return head;
 }
 
 char * strdup(const char * s) {

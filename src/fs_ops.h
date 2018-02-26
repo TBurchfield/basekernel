@@ -15,7 +15,7 @@ struct fs_dirent_ops {
 	int (*mkdir)(struct fs_dirent *d, const char *name);
 	int (*mkfile)(struct fs_dirent *d, const char *name);
 	struct fs_dirent *(*lookup)(struct fs_dirent *d, const char *name);
-	int (*readdir)(struct fs_dirent *d, char *buffer, int buffer_length);
+	struct fs_dirent_node *(*readdir)(struct fs_dirent *d);
 	int (*rmdir)(struct fs_dirent *d, const char *name);
 	int (*link)(struct fs_dirent *d, const char *oldpath, const char *newpath);
 	int (*unlink)(struct fs_dirent *d, const char *name);
