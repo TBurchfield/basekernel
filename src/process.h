@@ -19,6 +19,7 @@ See the file LICENSE for details.
 #define PROCESS_STATE_BLOCKED 3
 #define PROCESS_STATE_GRAVE   4
 #define PROCESS_MAX_WINDOWS   5
+#define PROCESS_MAX_ROOTS     5
 #define PROCESS_MAX_FILES   100
 
 
@@ -36,6 +37,9 @@ struct process {
 	char *stack_ptr;
     struct graphics* windows[PROCESS_MAX_WINDOWS];
     int window_count;
+    struct fs_space* spaces[PROCESS_MAX_ROOTS];
+    int space_count;
+    int cws;
 	struct fs_file *fdtable[PROCESS_MAX_FILES];
 	struct list mounts;
 	struct fs_dirent *cwd;
