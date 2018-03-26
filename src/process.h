@@ -11,6 +11,7 @@ See the file LICENSE for details.
 #include "list.h"
 #include "pagetable.h"
 #include "x86.h"
+#include "subset.h"
 #include "fs.h"
 
 #define PROCESS_STATE_CRADLE  0
@@ -19,7 +20,7 @@ See the file LICENSE for details.
 #define PROCESS_STATE_BLOCKED 3
 #define PROCESS_STATE_GRAVE   4
 #define PROCESS_MAX_WINDOWS   5
-#define PROCESS_MAX_ROOTS     5
+#define PROCESS_MAX_FS_SPACES 5
 #define PROCESS_MAX_FILES   100
 
 
@@ -37,7 +38,7 @@ struct process {
 	char *stack_ptr;
     struct graphics* windows[PROCESS_MAX_WINDOWS];
     int window_count;
-    struct fs_space* spaces[PROCESS_MAX_ROOTS];
+    struct fs_space_ref spaces[PROCESS_MAX_FS_SPACES];
     int space_count;
     int cws;
 	struct fs_file *fdtable[PROCESS_MAX_FILES];
