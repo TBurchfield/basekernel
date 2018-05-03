@@ -32,11 +32,11 @@ int process_command(char * line) {
     }
     pch = strtok(0, " ");
     if (pch) {
-      const char* argv[MAX_ARGV_LENGTH];
+      const char* argv[32];
       argv[0] = pch;
       int i = 1;
       char * next;
-      while((next = strtok(0, " ")) && i < MAX_ARGV_LENGTH) {
+      while((next = strtok(0, " "))) {
         argv[i++] = next;
       }
       int pid = fork();
@@ -57,11 +57,11 @@ int process_command(char * line) {
     }
     pch = strtok(0, " ");
     if (pch) {
-      const char* argv[MAX_ARGV_LENGTH];
+      const char* argv[32];
       argv[0] = pch;
       int i = 1;
       char * next;
-      while((next = strtok(0, " ")) && i < MAX_ARGV_LENGTH) {
+      while((next = strtok(0, " "))) {
         argv[i++] = next;
       }
       int pid = fork();
